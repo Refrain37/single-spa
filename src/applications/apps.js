@@ -23,13 +23,13 @@ import { formatErrorMessage } from "./app-errors.js";
 import { isInBrowser } from "../utils/runtime-environment.js";
 import { assign } from "../utils/assign";
 
-const apps = [];
+const apps = []; // 存放所有子应用
 
 export function getAppChanges() {
-  const appsToUnload = [],
-    appsToUnmount = [],
-    appsToLoad = [],
-    appsToMount = [];
+  const appsToUnload = [], // 待移除队列
+    appsToUnmount = [], // 待卸载队列
+    appsToLoad = [], // 待加载队列
+    appsToMount = []; // 待挂载队列
 
   // We re-attempt to download applications in LOAD_ERROR after a timeout of 200 milliseconds
   const currentTime = new Date().getTime();
@@ -88,12 +88,20 @@ export function getAppStatus(appName) {
   return app ? app.status : null;
 }
 
+//  传入的参数为两种：参数对象或单独的项
+//  {
+//     name: 'app2',
+//     app: loadApp('http://localhost:8082', 'app2'),
+//     activeWhen: location => location.pathname.startsWith('/app2'),
+//     customProps: {}
+//   }
 export function registerApplication(
   appNameOrConfig,
   appOrLoadApp,
   activeWhen,
   customProps
 ) {
+  // 1.转化处理传入的配置项为一个对象
   const registration = sanitizeArguments(
     appNameOrConfig,
     appOrLoadApp,
@@ -101,6 +109,7 @@ export function registerApplication(
     customProps
   );
 
+  // 检出是否有重复项
   if (getAppNames().indexOf(registration.name) !== -1)
     throw Error(
       formatErrorMessage(
@@ -111,11 +120,12 @@ export function registerApplication(
       )
     );
 
+  // 2.将处理后的参数对象保存到apps中
   apps.push(
     assign(
       {
         loadErrorTime: null,
-        status: NOT_LOADED,
+        status: NOT_LOADED, // 状态初始化为未加载
         parcels: {},
         devtools: {
           overlays: {
@@ -128,6 +138,7 @@ export function registerApplication(
     )
   );
 
+  // 3.在浏览器环境下，进入reroute
   if (isInBrowser) {
     ensureJQuerySupport();
     reroute();

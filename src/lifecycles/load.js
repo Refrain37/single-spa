@@ -23,20 +23,20 @@ import { assign } from "../utils/assign.js";
 export function toLoadPromise(app) {
   return Promise.resolve().then(() => {
     if (app.loadPromise) {
-      return app.loadPromise;
+      return app.loadPromise; // 已存在时直接返回
     }
 
     if (app.status !== NOT_LOADED && app.status !== LOAD_ERROR) {
       return app;
     }
 
-    app.status = LOADING_SOURCE_CODE;
+    app.status = LOADING_SOURCE_CODE; // 修改状态
 
     let appOpts, isUserErr;
 
     return (app.loadPromise = Promise.resolve()
       .then(() => {
-        const loadPromise = app.loadApp(getProps(app));
+        const loadPromise = app.loadApp(getProps(app)); // 调用app中的配置项loadApp函数（promise）
         if (!smellsLikeAPromise(loadPromise)) {
           // The name of the app will be prepended to this error message inside of the handleAppError function
           isUserErr = true;

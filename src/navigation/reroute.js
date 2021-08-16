@@ -45,6 +45,7 @@ export function reroute(pendingPromises = [], eventArguments) {
     });
   }
 
+  // 获取不同状态的应用队列
   const {
     appsToUnload,
     appsToUnmount,
@@ -56,6 +57,7 @@ export function reroute(pendingPromises = [], eventArguments) {
     oldUrl = currentUrl,
     newUrl = (currentUrl = window.location.href);
 
+  // 判断是否初次启动
   if (isStarted()) {
     appChangeUnderway = true;
     appsThatChanged = appsToUnload.concat(
@@ -63,10 +65,10 @@ export function reroute(pendingPromises = [], eventArguments) {
       appsToUnmount,
       appsToMount
     );
-    return performAppChanges();
+    return performAppChanges(); // 启动和加载应用
   } else {
     appsThatChanged = appsToLoad;
-    return loadApps();
+    return loadApps(); // 初始化加载应用
   }
 
   function cancelNavigation() {
