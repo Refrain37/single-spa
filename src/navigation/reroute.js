@@ -65,10 +65,10 @@ export function reroute(pendingPromises = [], eventArguments) {
       appsToUnmount,
       appsToMount
     );
-    return performAppChanges(); // 启动和加载应用
+    return performAppChanges(); // 2.start后,启动和加载应用
   } else {
-    appsThatChanged = appsToLoad;
-    return loadApps(); // 初始化加载应用
+    appsThatChanged = appsToLoad; // 将toload的应用队列加入队列中
+    return loadApps(); // 1.初始化加载应用
   }
 
   function cancelNavigation() {
@@ -77,13 +77,13 @@ export function reroute(pendingPromises = [], eventArguments) {
 
   function loadApps() {
     return Promise.resolve().then(() => {
-      const loadPromises = appsToLoad.map(toLoadPromise);
+      const loadPromises = appsToLoad.map(toLoadPromise); // toload的app队列都调用toLoadPromise，返回一个promises
 
       return (
-        Promise.all(loadPromises)
-          .then(callAllEventListeners)
+        Promise.all(loadPromises) // 1.app.loadPromise被调用,return内容为app数组
+          .then(callAllEventListeners) // 2.调用callAllEventListeners
           // there are no mounted apps, before start() is called, so we always return []
-          .then(() => [])
+          .then(() => []) // 因为此时还没有进行mounted，在start被调用前，因此返回[]
           .catch((err) => {
             callAllEventListeners();
             throw err;

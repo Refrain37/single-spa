@@ -26,14 +26,17 @@ export function toLoadPromise(app) {
       return app.loadPromise; // 已存在时直接返回
     }
 
+    // 状态不为NOT_LOADED/LOAD_ERROR时直接返回
     if (app.status !== NOT_LOADED && app.status !== LOAD_ERROR) {
       return app;
     }
 
-    app.status = LOADING_SOURCE_CODE; // 修改状态
+    app.status = LOADING_SOURCE_CODE; // 修改状态为LOADING_SOURCE_CODE（加载资源中-2）
 
     let appOpts, isUserErr;
 
+    // app.loadPromise被赋值并返回
+    // app.loadPromise的返回值是一个promise，参数为app本身
     return (app.loadPromise = Promise.resolve()
       .then(() => {
         const loadPromise = app.loadApp(getProps(app)); // 调用app中的配置项loadApp函数（promise）
@@ -54,7 +57,7 @@ export function toLoadPromise(app) {
         return loadPromise.then((val) => {
           app.loadErrorTime = null;
 
-          appOpts = val;
+          appOpts = val; // 接收参数，值为getProps(app)的返回值
 
           let validationErrMessage, validationErrCode;
 
@@ -122,7 +125,8 @@ export function toLoadPromise(app) {
             );
           }
 
-          app.status = NOT_BOOTSTRAPPED;
+          app.status = NOT_BOOTSTRAPPED; // 切换状态到NOT_BOOTSTRAPPED（没有启动）
+          // 兼容生命周期的数组写法
           app.bootstrap = flattenFnArray(appOpts, "bootstrap");
           app.mount = flattenFnArray(appOpts, "mount");
           app.unmount = flattenFnArray(appOpts, "unmount");
@@ -131,7 +135,7 @@ export function toLoadPromise(app) {
 
           delete app.loadPromise;
 
-          return app;
+          return app; // 返回app本身
         });
       })
       .catch((err) => {

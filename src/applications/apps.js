@@ -125,7 +125,7 @@ export function registerApplication(
     assign(
       {
         loadErrorTime: null,
-        status: NOT_LOADED, // 状态初始化为未加载
+        status: NOT_LOADED, // 状态初始化为NOT_LOADED(未加载-1)
         parcels: {},
         devtools: {
           overlays: {
@@ -141,7 +141,7 @@ export function registerApplication(
   // 3.在浏览器环境下，进入reroute
   if (isInBrowser) {
     ensureJQuerySupport();
-    reroute();
+    reroute(); // 调用reroute
   }
 }
 

@@ -5,13 +5,14 @@ import { isInBrowser } from "./utils/runtime-environment.js";
 
 let started = false;
 
+// 启动
 export function start(opts) {
   started = true;
   if (opts && opts.urlRerouteOnly) {
     setUrlRerouteOnly(opts.urlRerouteOnly);
   }
   if (isInBrowser) {
-    reroute();
+    reroute(); // 二次调用reroute
   }
 }
 
